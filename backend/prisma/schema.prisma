@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+    customer
+    shop
+    admin
+}
+enum Status {
+    pending
+    comfirmed
+    shipping
+    cancelled
+}
+enum Rating {
+    one
+    two
+    three
+    four
+    five
+}
+model User { @@map("users")
+    id Int @id @default(autoincrement())
+    displayName String @map("display_name")
+    email String @unique
+    hashedPassword String @map("hashed_password")
+    role Role
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+}
+
+model Session { @@map("sessions")
+    id Int @id @default(autoincrement())
+    userId Int @map("user_id")
+    hashedRefreshToken String @unique @map("hashed_refresh_token")
+    createdAt DateTime @default(now()) @map("created_at")
+    expiredAt DateTime @updatedAt @map("expired_at")
+
+    user User @relation(fields: [userId], references: [id])
+}
+
+model Notification { @@map("notifications")
+    id Int @id @default(autoincrement())
+    senderId Int @map("sender_id")
+    receivedId Int @map("received_id")
+    type String
+    title String
+    content String
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+
+    sender User @relation(fields: [senderId], references: [id])
+    receive User @relation(fields: [receivedId], references: [id])
+}
+
+model Message { @@map("messages")
+    id Int @id @default(autoincrement())
+    conversationId Int @map("conversation_id")
+    message String
+    senderId Int @map("sender_id")
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+
+    conversation Conversation @relation(fields: [conversationId], references: [id])
+}
+
+model Conversation { @@map("conversations")
+    id Int @id @default(autoincrement())
+    ShopId Int @map("shop_id")
+    customerId Int @map("customer_id")
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+
+model Product { @@map("products")
+    id Int @id @default(autoincrement())
+    ShopId Int @map("shop_id")
+    SKU String @unique
+    brandId Int @map("brand_id")
+    categoryId Int @map("category_id")
+    name String 
+    size String
+    quantity Int
+    price Int
+    descrition String?
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+
+    shop User @relation(fields: [ShopId], references: [id])
+    brand Brand @relation(fields: [brandId], references: [id])
+    category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Brand { @@map("brands")
+    id Int @id @default(autoincrement())
+    name String 
+    description String?
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+
+model Category { @@map("categories")
+    id Int @id @unique
+    name String
+    description String
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+
+model orders {
+    id Int @id @unique
+    customer_id int [ref: > users.id, not null]
+    shop_id int [ref: > users.id, not null]
+    status Status [not null]
+    price int [not null]
+    total int [not null]
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+model order_items {
+    id Int @id @unique
+    order_id int [ref: > orders.id, not null]
+    product_id int [ref: > products.id, not null]
+    quantity int [not null]
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+model carts {
+    id Int @id @unique
+    customer_id int [ref: > users.id, not null]
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+model cart_items {
+    id Int @id @unique
+    cart_id int [ref: > carts.id, not null]
+    product_id int [ref: > products.id, not null]
+    quantity int [not null]
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
+model feedback {
+    id Int @id @unique
+    product_id int [ref: > products.id, not null]
+    rating Rating [not null]
+    feedback varchar [not null]
+    createdAt DateTime @map("created_at")
+    updatedAt DateTime @map("updated_at")
+}
