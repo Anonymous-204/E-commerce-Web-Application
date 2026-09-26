@@ -14,7 +14,7 @@ enum Role {
 }
 enum Status {
     pending
-    comfirmed
+    confirmed
     shipping
     cancelled
 }
@@ -34,6 +34,17 @@ model User { @@map("users")
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
+    userSession Session[] @relation("UserSession")
+    senderNotification Notification[] @relation("SenderNotification") 
+    receiverNotification Notification[] @relation("ReceiverNotification") 
+    userMessage Message[] @relation("UserMessage")
+    shopConversation Conversation[] @relation("ShopConversation")
+    customerConversation Conversation[] @relation("CustomerConversation")
+
+    customerOrder Order[] @relation("CustomerOrder")
+    shopOrder Order[] @relation("ShopOrder")
+    shopProduct Product[] @relation("ShopProduct")
+    customerCart Cart? @relation("CustomerCart")
 }
 
 model Session { @@map("sessions")
@@ -41,9 +52,9 @@ model Session { @@map("sessions")
     userId Int @map("user_id")
     hashedRefreshToken String @unique @map("hashed_refresh_token")
     createdAt DateTime @default(now()) @map("created_at")
-    expiredAt DateTime @updatedAt @map("expired_at")
+    expiredAt DateTime @map("expired_at")
 
-    user User @relation(fields: [userId], references: [id])
+    user User @relation("UserSession",fields: [userId], references: [id])
 }
 
 model Notification { @@map("notifications")
@@ -53,11 +64,11 @@ model Notification { @@map("notifications")
     type String
     title String
     content String
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-    sender User @relation(fields: [senderId], references: [id])
-    receive User @relation(fields: [receivedId], references: [id])
+    sender User @relation("SenderNotification",fields: [senderId], references: [id])
+    receiver User @relation("ReceiverNotification",fields: [receivedId], references: [id])
 }
 
 model Message { @@map("messages")
@@ -65,23 +76,29 @@ model Message { @@map("messages")
     conversationId Int @map("conversation_id")
     message String
     senderId Int @map("sender_id")
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-    conversation Conversation @relation(fields: [conversationId], references: [id])
+    conversation Conversation @relation("ConversationMessage",fields: [conversationId], references: [id])
+    sender User @relation("UserMessage",fields: [senderId], references: [id])
 }
 
 model Conversation { @@map("conversations")
     id Int @id @default(autoincrement())
-    ShopId Int @map("shop_id")
+    shopId Int @map("shop_id")
     customerId Int @map("customer_id")
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    shop User @relation("ShopConversation",fields: [shopId], references: [id])
+    customer User @relation("CustomerConversation",fields: [customerId], references: [id])
+
+    conversationMessage Message[] @relation("ConversationMessage")
 }
 
 model Product { @@map("products")
     id Int @id @default(autoincrement())
-    ShopId Int @map("shop_id")
+    shopId Int @map("shop_id")
     SKU String @unique
     brandId Int @map("brand_id")
     categoryId Int @map("category_id")
@@ -89,68 +106,93 @@ model Product { @@map("products")
     size String
     quantity Int
     price Int
-    descrition String?
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    description String?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-    shop User @relation(fields: [ShopId], references: [id])
-    brand Brand @relation(fields: [brandId], references: [id])
-    category Category @relation(fields: [categoryId], references: [id])
+    shop User @relation("ShopProduct",fields: [shopId], references: [id])
+    brand Brand @relation("BrandProduct",fields: [brandId], references: [id])
+    category Category @relation("CategoryProduct",fields: [categoryId], references: [id])
+    productOrderItem OrderItem[] @relation("ProductOrderItem")
+    productCartItem CartItem[] @relation("ProductCartItem")
+    productFeedback Feedback[] @relation("ProductFeedback")
 }
 
 model Brand { @@map("brands")
     id Int @id @default(autoincrement())
     name String 
     description String?
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    brandProduct Product[] @relation("BrandProduct")
 }
 
 model Category { @@map("categories")
-    id Int @id @unique
+    id Int @id @default(autoincrement())
     name String
-    description String
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    description String?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    categoryProduct Product[] @relation("CategoryProduct")
 }
 
-model orders {
-    id Int @id @unique
-    customer_id int [ref: > users.id, not null]
-    shop_id int [ref: > users.id, not null]
-    status Status [not null]
-    price int [not null]
-    total int [not null]
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+model Order { @@map("orders")
+    id Int @id @default(autoincrement())
+    customerId Int @map("customer_id")
+    shopId Int @map("shop_id")
+    status Status 
+    price Int
+    total Int
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    customer User @relation("CustomerOrder",fields: [customerId], references: [id])
+    shop User @relation("ShopOrder",fields: [shopId], references: [id])
+    orderOrderItem OrderItem[] @relation("OrderOrderItem")
 }
-model order_items {
-    id Int @id @unique
-    order_id int [ref: > orders.id, not null]
-    product_id int [ref: > products.id, not null]
-    quantity int [not null]
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+model OrderItem { @@map("order_items")
+    id Int @id @default(autoincrement())
+    orderId Int @map("order_id")
+    productId Int @map("product_id")
+    quantity Int
+    price Int
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    @@unique([orderId, productId])
+
+    order Order @relation("OrderOrderItem",fields: [orderId], references: [id])
+    product Product @relation("ProductOrderItem",fields: [productId], references: [id])
 }
-model carts {
-    id Int @id @unique
-    customer_id int [ref: > users.id, not null]
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+model Cart { @@map("carts")
+    id Int @id @default(autoincrement())
+    customerId Int @map("customer_id") @unique
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    customer User @relation("CustomerCart",fields: [customerId], references: [id])
+    cartCartItem CartItem[] @relation("CartCartItem")
 }
-model cart_items {
-    id Int @id @unique
-    cart_id int [ref: > carts.id, not null]
-    product_id int [ref: > products.id, not null]
-    quantity int [not null]
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+model CartItem { @@map("cart_items")
+    id Int @id @default(autoincrement())
+    cartId Int @map("cart_id")
+    productId Int @map("product_id")
+    quantity Int
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    @@unique([cartId, productId])
+
+    cart Cart @relation("CartCartItem",fields: [cartId], references: [id])
+    product Product @relation("ProductCartItem",fields: [productId], references: [id])
 }
-model feedback {
-    id Int @id @unique
-    product_id int [ref: > products.id, not null]
-    rating Rating [not null]
-    feedback varchar [not null]
-    createdAt DateTime @map("created_at")
-    updatedAt DateTime @map("updated_at")
+model Feedback { @@map("feedbacks")
+    id Int @id @default(autoincrement())
+    productId Int @map("product_id")
+    rating Rating
+    feedback String
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    product Product @relation("ProductFeedback",fields: [productId], references: [id])
 }
