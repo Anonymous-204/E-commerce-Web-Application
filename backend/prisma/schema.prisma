@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -27,7 +27,7 @@ enum Rating {
 }
 model User { @@map("users")
     id Int @id @default(autoincrement())
-    displayName String @map("display_name")
+    userName String @map("user_name")
     email String @unique
     hashedPassword String @map("hashed_password")
     role Role
