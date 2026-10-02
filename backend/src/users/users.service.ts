@@ -12,6 +12,20 @@ export default class UsersService {
             email
         }})
     }
+    async findById(id:number) {
+        return await this.prisma.user.findUnique({
+        where:{
+            id
+        }})
+    }
+    async findSession(userId: number, hashedRefreshToken: string) {
+        return await this.prisma.session.findFirst({
+            where: {
+                userId,
+                hashedRefreshToken
+            }
+        })
+    }
     async createUser(userName: string, email: string, hashedPassword:string, role:Role) {
         await this.prisma.user.create({
             data: {
@@ -32,6 +46,13 @@ export default class UsersService {
                 userId,
                 hashedRefreshToken,
                 expiredAt: new Date(Date.now() + 1000*60*60*24*7)
+            }
+        })
+    }
+    async refreshTokenClear(userId: number){
+        await this.prisma.session.deleteMany({
+            where: {
+                userId
             }
         })
     }

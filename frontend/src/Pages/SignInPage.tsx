@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/SignUpPage.css'
+import api from "../services/api";
 export default function SignInPage() {
     const navigate = useNavigate()
     const [form, setForm] = useState({
@@ -20,7 +21,7 @@ export default function SignInPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            await axios.post("http://localhost:3000/auth/signin", form)
+            await api.post("/auth/signin", form)
             setForm({
                 email: "",
                 password: "",

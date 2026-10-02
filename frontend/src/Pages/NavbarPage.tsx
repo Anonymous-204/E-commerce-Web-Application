@@ -1,6 +1,15 @@
 import React from "react";
 import '../styles/NavbarPage.css'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from '../services/api'
 export default function Navbar() {
+    const navigate = useNavigate();
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const logoutHandle = async () => {
+        await api.post("/auth/signout");
+        navigate("/signin");
+    };
     return (
         <nav>
             <div className="logo">ECWA</div>
@@ -13,14 +22,15 @@ export default function Navbar() {
             <div className="personal">
                 <input type="text" placeholder="Search..." />
                 <div className="cart">🛒</div>
-                <div className="user">
-                    <select>
-                        <option disabled hidden>👤</option>
-                        <option> ✎ Profile</option>
-                        <option>⚙️ settings</option>
-                        <option>📦 Orders</option>
-                        <option>🚪 Logout</option>
-                    </select>
+                <div className="user" onClick={() => setUserMenuOpen(!userMenuOpen)}>👤
+                        {userMenuOpen && (
+                            <div className="user-menu">
+                                <button onClick={() => navigate("/profile")}> ✎ Profile</button>
+                                <button onClick={() => navigate("/settings")}>⚙️ settings</button>
+                                <button onClick={() => navigate("/orders")}>📦 Orders</button>
+                                <button onClick={logoutHandle}>🚪 Sign Out</button>
+                            </div>
+                        )}
                 </div>
             </div>
         </nav>

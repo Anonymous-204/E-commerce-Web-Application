@@ -7,7 +7,7 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     const [type, token] = authHeader?.split(' ') || ['', ''];
-    if (type!=="bearer"||token) throw new UnauthorizedException("token sai định dạng hoặc không có")
+    if (type!=="Bearer"||!token) throw new UnauthorizedException("token sai định dạng hoặc không có")
     next();
   }
 }

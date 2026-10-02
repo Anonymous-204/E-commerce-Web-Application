@@ -2,40 +2,144 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    flex: 1;
-    position: sticky;
-    top: 0;
 }
+
+/* ================= NAVBAR ================= */
+
 nav {
     width: 100%;
-    height: 40px;
-    border: 1px solid black;
+    height: 48px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0 1rem;
+
+    background-color: rgb(18, 18, 18);
     color: white;
-    font-weight: 600;
-    background-color: rgb(10, 10, 10);
-}
-.info h4{
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-.info h4:hover, .logo:hover, .personal:hover{
-    cursor: pointer;
-    background-color: antiquewhite;
+
+    box-sizing: border-box;
 }
 
+/* ================= LEFT INFO ================= */
+
 .info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
     height: 100%;
-}
-.personal{
     display: flex;
     align-items: center;
-    gap: 1rem;
+}
+
+.info h4 {
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    margin: 0;
+    padding: 0 1rem;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border-right: 1px solid #3a3a3a;
+
+    box-sizing: border-box;
+}
+
+.info h4:first-child {
+    border-left: 1px solid #3a3a3a;
+}
+
+.info h4:hover,
+.personal div:hover {
+    cursor: pointer;
+    background-color: #f0f0f0;
+    color: black;
+}
+.logo:hover{
+    cursor: pointer;
+}
+
+/* ================= RIGHT ================= */
+
+.personal {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.personal > div {
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    padding: 0 1rem;
+
+    border-left: 1px solid #3a3a3a;
+
+    box-sizing: border-box;
+}
+.personal input {
+    height: 100%;
+    width: 200px;
+    padding: 0 0.5rem;
+
+    border: none;
+    outline: none;
+
+    background-color: rgba(150, 138, 138, 0.2);
+    color: white;
+
+    box-sizing: border-box;
+}
+
+/* ================= USER ================= */
+
+.user {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* ================= DROPDOWN ================= */
+
+.user-menu {
+    position: absolute;
+
+    width: 140px;
+
+    top: calc(100% + 6px);
+    right: 0;
+
+    background-color: white;
+    color: #222;
+
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    padding: 0.35rem 0;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    z-index: 100;
+}
+
+.user-menu button {
+    width: 100%;
+
+    background: none;
+    border: none;
+
+    padding: 0.65rem 1rem;
+
+    text-align: left;
+
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.user-menu button:hover {
+    background-color: black;
 }

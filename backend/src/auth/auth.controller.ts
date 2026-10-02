@@ -23,4 +23,22 @@ export class AuthController {
         })
         return {accessToken: result.accessToken, message: result.message}
     }
+    @Post("signout")
+    async signOut(
+        @Body("userId") userId: number,
+        @Res({passthrough:true}) res: Response
+    ){
+        const result = await this.authService.SignOut(userId)
+        res.clearCookie('refreshToken')
+        return {message: result.message}
+    }
+    @Post("refresh")
+    async refreshToken(
+        @Body("userId") userId: number,
+        @Body("refreshToken") refreshToken: string,
+        @Res({passthrough:true}) res: Response
+    ){
+        const result = await this.authService.refreshToken(userId, refreshToken)
+        return {accessToken: result.accessToken}
+    }
 }
