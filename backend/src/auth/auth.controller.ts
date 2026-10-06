@@ -1,44 +1,64 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { SignInDTO, SignUpDTO } from './auth.dto.js';
 import { AuthService } from './auth.service.js';
-import type {Response} from 'express'
+import type { Request, Response } from 'express';
+
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
+
     @Post("signup")
     signUp(
         @Body() data: SignUpDTO
-    ){return this.authService.signUp(data)}
+    ) {
+        return this.authService.signUp(data);
+    }
 
     @Post("signin")
     async signIn(
         @Body() data: SignInDTO,
-        @Res({passthrough:true}) res: Response
+        @Res({ passthrough: true }) res: Response
     ) {
-        const result = await this.authService.signIn(data)
-        res.cookie('refreshToken',result.refreshToken,{
+        const result = await this.authService.signIn(data);
+
+        res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
             secure: false,
-            sameSite: 'strict'
-        })
-        return {accessToken: result.accessToken, message: result.message}
+            sameSite: 'strict',
+        });
+
+        return {
+            accessToken: result.accessToken,
+            message: result.message,
+        };
     }
+
     @Post("signout")
     async signOut(
-        @Body("userId") userId: number,
-        @Res({passthrough:true}) res: Response
-    ){
-        const result = await this.authService.SignOut(userId)
-        res.clearCookie('refreshToken')
-        return {message: result.message}
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        const result = await this.authService.SignOut(req.cookies?.refreshToken);
+
+        res.clearCookie('refreshToken');
+
+        return {
+            message: result.message,
+        };
     }
+
     @Post("refresh")
     async refreshToken(
-        @Body("userId") userId: number,
-        @Body("refreshToken") refreshToken: string,
-        @Res({passthrough:true}) res: Response
-    ){
-        const result = await this.authService.refreshToken(userId, refreshToken)
-        return {accessToken: result.accessToken}
+        @Req() req: Request,
+    ) {
+        const refreshToken = req.cookies?.refreshToken;
+
+        const result = await this.authService.refreshToken(
+            refreshToken
+        );
+
+        return {
+            accessToken: result.accessToken,
+        };
     }
 }

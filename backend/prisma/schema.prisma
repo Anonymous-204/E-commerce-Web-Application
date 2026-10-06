@@ -29,6 +29,7 @@ model User { @@map("users")
     id Int @id @default(autoincrement())
     userName String @map("user_name")
     email String @unique
+    phone String?
     hashedPassword String @map("hashed_password")
     role Role
     createdAt DateTime @default(now()) @map("created_at")

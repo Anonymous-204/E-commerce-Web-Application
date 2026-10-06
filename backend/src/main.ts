@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule, ObserveInstrument } from './app.module.js';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -11,6 +12,7 @@ async function bootstrap() {
     credentials: true,
     
   });
+  app.use(cookieParser());
   await app.listen(Number(process.env.PORT));
 }
 await bootstrap();

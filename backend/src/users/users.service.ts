@@ -18,13 +18,13 @@ export default class UsersService {
             id
         }})
     }
-    async findSession(userId: number, hashedRefreshToken: string) {
-        return await this.prisma.session.findFirst({
+    async findSession(hashedRefreshToken: string) {
+        const session = await this.prisma.session.findFirst({
             where: {
-                userId,
                 hashedRefreshToken
             }
         })
+        return session;
     }
     async createUser(userName: string, email: string, hashedPassword:string, role:Role) {
         await this.prisma.user.create({
@@ -41,7 +41,7 @@ export default class UsersService {
     }
     async hashRefreshToken(userId: number, refreshToken: string){
         const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex')
-        this.prisma.session.create({
+        await this.prisma.session.create({
             data: {
                 userId,
                 hashedRefreshToken,
@@ -49,10 +49,29 @@ export default class UsersService {
             }
         })
     }
-    async refreshTokenClear(userId: number){
+    async refreshTokenClear(hashedRefreshToken: string){
         await this.prisma.session.deleteMany({
             where: {
-                userId
+                hashedRefreshToken
+            }
+        })
+    }
+    async me(id: number) {
+        return await this.prisma.user.findUnique({
+            where: {
+                id
+            },
+            select: {
+                id: true,
+                role: true,
+                userName: true
+            }
+        })
+    }
+    async profile(id: number) {
+        return await this.prisma.user.findUnique({
+            where: {
+                id
             }
         })
     }

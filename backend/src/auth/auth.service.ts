@@ -38,19 +38,20 @@ export class AuthService {
         await this.userService.hashRefreshToken(exiting.id, refreshToken)
         return {accessToken, refreshToken, message:`Đăng nhập thành công, chào mừng ${exiting.userName}`}
     }
-    async SignOut(userId: number) {
-        await this.userService.refreshTokenClear(userId)
-        return {message: "Đăng xuất thành công"}
-    }
-    async refreshToken(userId: number, refreshToken: string) {
+    async SignOut(refreshToken: string) {
         const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex')
-        const session = await this.userService.findSession(userId, hashedRefreshToken)
+        await this.userService.refreshTokenClear(hashedRefreshToken)
+        return {message: "Đăng xuất thành công" }
+    }
+    async refreshToken(refreshToken: string) {
+        const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex')
+        const session = await this.userService.findSession(hashedRefreshToken)
         if (!session) throw new UnauthorizedException("Token không hợp lệ")
-        if (session.expiredAt < new Date()) {
-            await this.userService.refreshTokenClear(userId)
+        if (session.expiredAt < new Date()) { 
+            await this.userService.refreshTokenClear(hashedRefreshToken)
             throw new UnauthorizedException("Token đã hết hạn")
         }
-        const user = await this.userService.findById(userId)
+        const user = await this.userService.findById(session.userId)
         if (!user) throw new UnauthorizedException("Người dùng không tồn tại")
         const accessToken = this.jwtService.sign({
             id: user.id,

@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
+import { ProductsService } from './products/products.service.js';
+import { ProductsModule } from './products/products.module.js';
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
@@ -19,9 +21,10 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     PrismaModule,
     UsersModule,
     AuthModule,
+    ProductsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ProductsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

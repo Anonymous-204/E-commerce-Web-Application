@@ -1,9 +1,9 @@
-import React from "react";
 import '../styles/NavbarPage.css'
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from '../services/api'
 export default function Navbar() {
+
     const navigate = useNavigate();
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const logoutHandle = async () => {
