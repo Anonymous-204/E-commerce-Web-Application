@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule, ObserveInstrument } from './app.module.js';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import { RolesGuard } from './common/guards/roles.guard.js';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
@@ -13,6 +14,9 @@ async function bootstrap() {
     
   });
   app.use(cookieParser());
+  app.useGlobalGuards(
+        app.get(RolesGuard)
+    );
   await app.listen(Number(process.env.PORT));
 }
 await bootstrap();

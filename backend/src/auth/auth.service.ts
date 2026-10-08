@@ -38,12 +38,14 @@ export class AuthService {
         await this.userService.hashRefreshToken(exiting.id, refreshToken)
         return {accessToken, refreshToken, message:`Đăng nhập thành công, chào mừng ${exiting.userName}`}
     }
-    async SignOut(refreshToken: string) {
+    async signOut(refreshToken: string) {
+        if (!refreshToken) return {message: "Đăng xuất thành công"}
         const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex')
         await this.userService.refreshTokenClear(hashedRefreshToken)
         return {message: "Đăng xuất thành công" }
     }
     async refreshToken(refreshToken: string) {
+        if (!refreshToken) throw new UnauthorizedException("không thấy token")
         const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex')
         const session = await this.userService.findSession(hashedRefreshToken)
         if (!session) throw new UnauthorizedException("Token không hợp lệ")

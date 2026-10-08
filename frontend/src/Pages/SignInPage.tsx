@@ -1,56 +1,98 @@
-import React from "react";
-import axios from 'axios'
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '../styles/SignUpPage.css'
 import api from "../services/api";
+import "../styles/SignInPage.css";
+
 export default function SignInPage() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
     const [form, setForm] = useState({
         email: "",
         password: "",
-    })
-    const handleChange = async (e:React.ChangeEvent<HTMLInputElement>) => {
-     
-        const {name, value} = e.target
+    });
+
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const { name, value } = e.target;
+
         setForm({
             ...form,
-            [name]: value
-        })
-    }
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
+        e.preventDefault();
+
         try {
-            await api.post("/auth/signin", form)
+            await api.post("/auth/signin", form);
+
             setForm({
                 email: "",
                 password: "",
-            })
-            navigate('/')
+            });
+
+            navigate("/");
         } catch (e) {
-            console.error("lỗi", e)
+            console.error("Lỗi đăng nhập:", e);
         }
-    }
-    
+    };
+
     return (
-        <div>
+        <div className="signin-page">
             <h1>Chào mừng đến với ECWA</h1>
-            <form className="form" onSubmit={handleSubmit}>
-                <h2>Đăng Nhập</h2>
-                <div className="inputs">
-                        
-                    <div className="input">
-                        <label htmlFor="email">Email</label>
-                        <input type="email" name="email" id="email" value={form.email} onChange={handleChange}/>
+
+            <form className="signin-form" onSubmit={handleSubmit}>
+                <h2>Đăng nhập</h2>
+
+                <div className="signin-inputs">
+                    <div className="signin-input">
+                        <label htmlFor="email">
+                            Email
+                        </label>
+
+                        <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            placeholder="Nhập email"
+                            required
+                        />
                     </div>
-                        
-                    <div className="input">
-                        <label htmlFor="password">Mật khẩu</label>
-                        <input type="password" name="password" id="password" value={form.password} onChange={handleChange}/>
+
+                    <div className="signin-input">
+                        <label htmlFor="password">
+                            Mật khẩu
+                        </label>
+
+                        <input
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={form.password}
+                            onChange={handleChange}
+                            placeholder="Nhập mật khẩu"
+                            required
+                        />
                     </div>
-                    <button type="submit">Đăng nhập</button>
+
+                    <button type="submit">
+                        Đăng nhập
+                    </button>
                 </div>
+
+                <p className="signup-link">
+                    Chưa có tài khoản?{" "}
+                    <span onClick={() => navigate("/signup")}>
+                        Đăng ký
+                    </span>
+                </p>
             </form>
         </div>
-    )
+    );
 }

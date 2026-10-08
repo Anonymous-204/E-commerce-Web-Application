@@ -1,16 +1,20 @@
-import { IsString, IsEmail, IsNotEmpty, MinLength } from "class-validator";
-export class CreateUserDTO {
-    @IsString()
-    @IsNotEmpty()
-    userName: string
+import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { Role } from '../generated/prisma/browser.js';
+export class UpdateUserDto {
+  @IsString()
+  @IsNotEmpty()
+  userName?: string;
 
-    @IsEmail()
-    @IsNotEmpty()
-    email: string
+  @IsString()
+  @IsNotEmpty()
+  email?: string;
 
-    @IsString()
-    @IsNotEmpty()
-    @MinLength(8)
-    password: string
-    
+  @IsEnum(Role)
+  role?: Role;
+
+  @IsString()
+  phone?: string;
+
+  @IsString()
+  address?: string;
 }

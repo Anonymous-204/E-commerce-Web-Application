@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { Role } from '../generated/prisma/enums.js';
 import crypto from 'node:crypto';
 import bcrypt from 'bcrypt'
+import { UpdateUserDto } from './users.dto.js';
 @Injectable()
 export default class UsersService {
     constructor(private readonly prisma: PrismaService ) {}
@@ -74,5 +75,29 @@ export default class UsersService {
                 id
             }
         })
+    }
+    async updateProfile(id: number, data: UpdateUserDto) {
+        const { userName, email, role, phone, address } = data;
+
+        return await this.prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                userName,
+                email,
+                role,
+                phone,
+                address
+            },
+            select: {
+                id: true,
+                userName: true,
+                email: true,
+                phone: true,
+                address: true,
+                role: true
+            }
+        });
     }
 }

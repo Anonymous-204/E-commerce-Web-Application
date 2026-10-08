@@ -1435,6 +1435,7 @@ export const UserScalarFieldEnum = {
   userName: 'userName',
   email: 'email',
   phone: 'phone',
+  address: 'address',
   hashedPassword: 'hashedPassword',
   role: 'role',
   createdAt: 'createdAt',
@@ -1502,6 +1503,7 @@ export const ProductScalarFieldEnum = {
   size: 'size',
   quantity: 'quantity',
   price: 'price',
+  image: 'image',
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

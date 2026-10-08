@@ -30,6 +30,7 @@ model User { @@map("users")
     userName String @map("user_name")
     email String @unique
     phone String?
+    address String?
     hashedPassword String @map("hashed_password")
     role Role
     createdAt DateTime @default(now()) @map("created_at")
@@ -107,6 +108,7 @@ model Product { @@map("products")
     size String
     quantity Int
     price Int
+    image String?
     description String?
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")

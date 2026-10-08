@@ -1,0 +1,169 @@
+.create-bnc-page {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    box-sizing: border-box;
+}
+
+.create-bnc-header {
+    margin-bottom: 30px;
+}
+
+.create-bnc-header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.create-bnc-header p {
+    margin-top: 8px;
+    color: #666;
+}
+
+.create-bnc-error {
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    background: #ffe8e8;
+    color: #c62828;
+}
+
+.create-bnc-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.bnc-section {
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 24px;
+    background: #fff;
+}
+
+.bnc-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.bnc-section-header h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.bnc-section-header span {
+    font-size: 13px;
+    color: #777;
+}
+
+.bnc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #d5d5d5;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #333;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.bnc-form button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 7px;
+    background: #222;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.bnc-form button:hover {
+    background: #000;
+}
+
+.bnc-form button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+.bnc-list {
+    margin-top: 24px;
+}
+
+.bnc-list h3 {
+    margin: 0 0 14px;
+    font-size: 16px;
+}
+
+.bnc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.bnc-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bnc-item strong {
+    font-size: 14px;
+}
+
+.bnc-item span {
+    font-size: 12px;
+    color: #888;
+}
+
+.empty-text {
+    color: #888;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .create-bnc-page {
+        padding: 25px 16px;
+    }
+
+    .create-bnc-layout {
+        grid-template-columns: 1fr;
+    }
+}
