@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
@@ -17,6 +17,36 @@ export class CartsService {
         }
         return {cart, message}
     }
+    async getItems(customerId: number) {
+        const cart = await this.getCart(customerId)
+        const data = await this.prisma.cartItem.findMany({
+            where:{
+                cartId:cart.cart.id
+            }, select: {
+                id:true,
+                quantity:true,
+                product: {
+                    select: {
+                        id:true,
+                        name: true,
+                        image: true,
+                        price:true
+                    }
+                }
+            }
+        })
+        const item = data.map(data=>{
+            return {
+            itemId: data.id,
+            productId: data.product.id,
+            quantity: data.quantity,
+            name: data.product.name,
+            image: data.product.image,
+            price: data.product.price
+            }
+        })
+        return item;
+    }
     async addToCart(productId: number, userId: number) {
         const cart = await this.getCart(userId)
         const item = await this.prisma.cartItem.findFirst({
@@ -31,7 +61,7 @@ export class CartsService {
                     id: item.id
                 },
                 data: {
-                    quantity:item.quantity+1
+                    quantity:{increment: 1}
                 }
             })
         } else {
@@ -45,4 +75,13 @@ export class CartsService {
         }
         return {message: "thêm vào giỏ thành công"}
     }
+    async clearCart(customerId: number) {
+        const cart = await this.prisma.cart.findUnique({
+            where: {customerId}
+        })
+        if (!cart) throw new NotFoundException("cart not found")
+        await this.prisma.cartItem.deleteMany({where:{cartId: cart.id}})
+        return {message: "cleared cart successful"}
+    }
+    //plus and decrease function
 }

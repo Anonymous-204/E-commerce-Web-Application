@@ -73,7 +73,10 @@ export default function HomePage() {
             setDetailLoading(false);
         }
     };
-
+    const addHandle = async () => {
+        if (!selectedProduct) throw new Error("không tìm thấy sản phẩm")
+        await api.put('carts', {productId: selectedProduct.id})
+    }
     const closeProductDetail = () => {
         setSelectedProduct(null);
         setDetailError("");
@@ -264,7 +267,7 @@ export default function HomePage() {
 
                                     </div>
 
-                                    <button className="add-to-cart-button">
+                                    <button className="add-to-cart-button" onClick={addHandle}>
                                         Add to cart
                                     </button>
 

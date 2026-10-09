@@ -9,6 +9,9 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
 import { ProductsModule } from './products/products.module.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { CartsModule } from './carts/carts.module.js';
+import { OrdersService } from './orders/orders.service.js';
+import { OrdersController } from './orders/orders.controller.js';
+import { OrdersModule } from './orders/orders.module.js';
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
@@ -24,9 +27,10 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AuthModule,
     ProductsModule,
     CartsModule,
+    OrdersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, RolesGuard],
+  controllers: [AppController, OrdersController],
+  providers: [AppService, RolesGuard]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
