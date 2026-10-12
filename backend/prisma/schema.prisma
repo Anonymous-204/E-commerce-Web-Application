@@ -146,7 +146,6 @@ model Order { @@map("orders")
     customerId Int @map("customer_id")
     shopId Int @map("shop_id")
     status Status 
-    price Int
     total Int
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")

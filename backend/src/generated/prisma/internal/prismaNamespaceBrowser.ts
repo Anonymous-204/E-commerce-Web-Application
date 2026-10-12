@@ -191,7 +191,6 @@ export const OrderScalarFieldEnum = {
   customerId: 'customerId',
   shopId: 'shopId',
   status: 'status',
-  price: 'price',
   total: 'total',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
