@@ -29,7 +29,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     CartsModule,
     OrdersModule,
   ],
-  controllers: [AppController, OrdersController],
+  controllers: [AppController],
   providers: [AppService, RolesGuard]
 })
 export class AppModule implements NestModule {

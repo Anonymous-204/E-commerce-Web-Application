@@ -1,5 +1,6 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "./NavbarPage";
 import { useAuth } from "../services/authContext";
 import api from "../services/api";
@@ -36,7 +37,21 @@ export default function HomePage() {
 
     const [detailLoading, setDetailLoading] = useState(false);
     const [detailError, setDetailError] = useState("");
+    const [searchParams] = useSearchParams();
 
+    const searchKeyword = (searchParams.get('q') ?? '').trim();
+
+    const filteredProducts = useMemo(() => {
+        const keyword = searchKeyword.toLocaleLowerCase('vi');
+
+        if (!keyword) {
+            return products;
+        }
+
+        return products.filter((product) =>
+            product.name.toLocaleLowerCase('vi').includes(keyword)
+        );
+    }, [products, searchKeyword]);
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -102,11 +117,13 @@ export default function HomePage() {
                 <section className="products-section">
 
                     <div className="products-header">
-                        <h2>Products</h2>
+                        <h2>
+                            {searchKeyword
+                                ? `Kết quả tìm kiếm: "${searchKeyword}"`
+                                : 'Products'}
+                        </h2>
 
-                        <span>
-                            {products.length} sản phẩm
-                        </span>
+                        <span>{filteredProducts.length} sản phẩm</span>
                     </div>
 
                     {loading && (
@@ -121,16 +138,21 @@ export default function HomePage() {
                         </div>
                     )}
 
-                    {!loading && !error && products.length === 0 && (
+                    
+                    {!loading && !error && filteredProducts.length === 0 && (
                         <div className="products-message">
-                            Chưa có sản phẩm nào.
+                            {searchKeyword
+                                ? `Không tìm thấy sản phẩm phù hợp với "${searchKeyword}".`
+                                : 'Chưa có sản phẩm nào.'}
                         </div>
                     )}
 
-                    {!loading && !error && products.length > 0 && (
+
+                    
+                    {!loading && !error && filteredProducts.length > 0 && (
                         <div className="products-grid">
 
-                            {products.map((product) => (
+                            {filteredProducts.map((product) => (
                                 <div
                                     className="product-card"
                                     key={product.id}
@@ -154,7 +176,6 @@ export default function HomePage() {
                                     </div>
 
                                     <div className="product-info">
-
                                         <h3 className="product-name">
                                             {product.name}
                                         </h3>
@@ -162,7 +183,6 @@ export default function HomePage() {
                                         <p className="product-price">
                                             {product.price.toLocaleString("vi-VN")} ₫
                                         </p>
-
                                     </div>
 
                                 </div>
@@ -170,6 +190,7 @@ export default function HomePage() {
 
                         </div>
                     )}
+
 
                 </section>
 

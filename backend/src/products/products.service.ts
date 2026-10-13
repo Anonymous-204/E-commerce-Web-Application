@@ -150,4 +150,33 @@ export class ProductsService {
         })
         return {data, message: "category created successful"}
     }
+    async search(keywords:string){
+        const q = keywords.trim()
+        if (!q) return []
+        return this.prisma.product.findMany({
+            where: {
+                name:{
+                    contains: q,
+                    mode: 'insensitive'
+                },
+            },
+            select: {
+                id: true,
+                name:true,
+                price:true,
+                quantity:true,
+                image:true,
+                brand: {
+                    select: {
+                        name: true
+                    }
+                },
+                category: {
+                    select: {
+                        name: true
+                    }
+                }
+            },take: 20
+        })
+    }
 }

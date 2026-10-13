@@ -2,7 +2,7 @@
 import '../styles/NavbarPage.css';
 
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../services/authContext';
 
@@ -18,7 +18,21 @@ interface CartItem {
 export default function Navbar() {
     const { user } = useAuth();
     const navigate = useNavigate();
-
+    const [checkingOut, setCheckingOut] = useState(false);
+    const [checkoutMessage, setCheckoutMessage] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams()
+        const [keyword, setKeyword] = useState(
+            searchParams.get('q') ?? ''
+        )
+        const handleSearch =(e:React.FormEvent<HTMLFormElement>) =>{
+            e.preventDefault()
+            const value = keyword.trim()
+            if (value) {
+                setSearchParams({q: value})
+            } else {
+                setSearchParams({})
+            }
+        }
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -65,7 +79,7 @@ export default function Navbar() {
     };
 
     const clearCart = async () => {
-        if (cartItems.length === 0) return;
+        if (cartItems.length === 0 || clearing || checkingOut) return;
 
         setClearing(true);
         setError('');
@@ -78,6 +92,33 @@ export default function Navbar() {
             setError('Could not clear your cart.');
         } finally {
             setClearing(false);
+        }
+    };
+    
+    const checkout = async () => {
+        if (cartItems.length === 0 || checkingOut) return;
+
+        setCheckingOut(true);
+        setError('');
+        setCheckoutMessage('');
+
+        try {
+            const response = await api.post('/orders/checkout');
+            const payload = response.data?.data ?? response.data;
+
+            setCartItems([]);
+            setCheckoutMessage(
+                payload?.message ?? 'Checkout successful!'
+            );
+        } catch (error: any) {
+            console.error('Checkout failed:', error);
+
+            setError(
+                error.response?.data?.message ??
+                'Checkout failed. Please try again.'
+            );
+        } finally {
+            setCheckingOut(false);
         }
     };
 
@@ -141,7 +182,18 @@ export default function Navbar() {
             </div>
 
             <div className="personal">
-                <input type="text" placeholder="Search..." />
+                <form className="navbar-search" onSubmit={handleSearch}>
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={keyword}
+                        onChange={(event) => setKeyword(event.target.value)}
+                    />
+
+                    <button type="submit" aria-label="Search">
+                        🔍
+                    </button>
+                </form>
 
                 {/* CART */}
                 <div className="navbar-cart-wrap" ref={cartRef}>
@@ -169,6 +221,11 @@ export default function Navbar() {
                                     {totalQuantity === 1 ? 'item' : 'items'}
                                 </span>
                             </div>
+                            {checkoutMessage && (
+                                <p className="cart-message cart-success">
+                                    {checkoutMessage}
+                                </p>
+                            )}
 
                             {loading ? (
                                 <p className="cart-message">
@@ -252,21 +309,26 @@ export default function Navbar() {
                                         type="button"
                                         className="cart-clear-button"
                                         onClick={() => void clearCart()}
-                                        disabled={clearing}
+                                        disabled={clearing || checkingOut}
                                     >
                                         {clearing ? 'Clearing...' : 'Clear cart'}
                                     </button>
 
+                                    
                                     <button
                                         type="button"
                                         className="cart-view-button"
-                                        onClick={() => {
-                                            setCartOpen(false);
-                                            navigate('/cart');
-                                        }}
+                                        onClick={() => void checkout()}
+                                        disabled={
+                                            checkingOut ||
+                                            loading ||
+                                            cartItems.length === 0 ||
+                                            user?.role !== 'customer'
+                                        }
                                     >
-                                        View Cart / Checkout
+                                        {checkingOut ? 'Processing...' : 'Checkout'}
                                     </button>
+
                                 </>
                             )}
                         </div>

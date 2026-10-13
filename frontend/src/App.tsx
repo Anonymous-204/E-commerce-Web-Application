@@ -6,6 +6,7 @@ import './app.css'
 import ProfilePage from './Pages/ProfilePage'
 import MyProductsPage from './Pages/MyProductsPage'
 import CreateBNC from './Pages/CreateBNC'
+import OrdersPage from './Pages/OrdersPage'
 function App() {
 
 
@@ -17,6 +18,7 @@ function App() {
         <Route path='profile' element={<ProfilePage/>}></Route>
         <Route path='my-products' element={<MyProductsPage/>}></Route>
         <Route path='bnc' element={<CreateBNC/>}></Route>
+        <Route path='orders' element={<OrdersPage/>}></Route>
         <Route path='/' element={<HomePage/>}></Route>
       </Routes>
     </BrowserRouter>

@@ -104,7 +104,7 @@ export class OrdersService {
         })
     }
     async getItem(orderId: number, customerId: number) {
-        return await this.prisma.orderItem.findFirst({
+        const order = await this.prisma.orderItem.findMany({
             where: {
                 orderId,
                 order: {customerId}
@@ -120,5 +120,7 @@ export class OrdersService {
                 price:true
             }
         })
+        if (!order) throw new UnauthorizedException("you can not read people's another order ")
+        return order
     }
 }

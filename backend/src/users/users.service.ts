@@ -22,7 +22,10 @@ export default class UsersService {
     async findSession(hashedRefreshToken: string) {
         const session = await this.prisma.session.findFirst({
             where: {
-                hashedRefreshToken
+                hashedRefreshToken,
+                expiredAt: {
+                    gt: new Date()
+                }
             }
         })
         return session;

@@ -5,7 +5,6 @@ import "../styles/SignInPage.css";
 
 export default function SignInPage() {
     const navigate = useNavigate();
-
     const [form, setForm] = useState({
         email: "",
         password: "",

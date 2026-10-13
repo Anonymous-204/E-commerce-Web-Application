@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Req, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ProductsService } from './products.service.js';
 import { CreateProductDto } from './products.dto.js';
 import { type AuthenticatedRequest } from '../common/middleware/logger.middleware.js';
@@ -59,5 +59,11 @@ export class ProductsController {
     async createCategory(
         @Body() data :{name: string, description?:string}){
         return await this.productsService.createCategory(data.name, data.description)
+    }
+
+    @Get('search')
+    @Roles(Role.customer)
+    async searchProducts(@Query('q') q:string){
+        return this.productsService.search(q&&'')
     }
 }

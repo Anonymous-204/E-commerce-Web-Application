@@ -19,7 +19,7 @@ export class OrdersController {
         return this.ordersService.getOrders(req.user?.id)
     }
 
-    @Post(':orderId/items')
+    @Get(':orderId/items')
     @Roles(Role.customer)
     async getItem(
         @Param('orderId', ParseIntPipe) orderId: number,
